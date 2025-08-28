@@ -119,20 +119,21 @@ async function loadPokemon() {
 async function fetchPokemonData(pokemonId) {
     try {
         // TODO 2.1: Hacer una petición fetch a la API
-        // PISTA: const response = await fetch(POKEAPI_BASE_URL + pokemonId);
+        const response = await fetch(POKEAPI_BASE_URL + pokemonId);
         // ¿Por qué usamos await? ¡Porque fetch() devuelve una promesa!
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
         
         
         // TODO 2.2: Verificar si la respuesta es exitosa
-        // PISTA: if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); }
+        if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); }
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
         
         
         // TODO 2.3: Convertir la respuesta a JSON
-        // PISTA: const pokemonData = await response.json();
+        const pokemonData = await response.json();
+        console.log("datos del pokemon" , pokemonData)
         // ¿Por qué usamos await? ¡Porque .json() también devuelve una promesa!
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
@@ -144,14 +145,30 @@ async function fetchPokemonData(pokemonId) {
         // Para sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
+        console.log('return',
+            {
+            id: pokemonData.id,
+            name: pokemonData.name,
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            types: pokemonData.types.map(type => type.type.name),
+            sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default,
+            attack: pokemonData.stats.find(stat => stat.stat.name === 'attack').base_stat,
+        })
         return {
-            // id: ?,
-            // name: ?,
-            // height: ?,
-            // weight: ?,
-            // types: ?,
-            // sprite: ?
-        };
+            id: pokemonData.id,
+            name: pokemonData.name,
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            types: pokemonData.types.map(type => type.type.name),
+            sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default,
+            hp: pokemonData.stats[0].base_stat,
+            attack: pokemonData.stats[1].base_stat,
+            defense: pokemonData.stats[2].base_stat,
+            specialAttack: pokemonData.stats[3].base_stat,
+            specialDefense: pokemonData.stats[4].base_stat,
+            speed: pokemonData.stats[5].base_stat
+        }
         
     } catch (error) {
         // TODO 2.5: Manejar errores
@@ -173,7 +190,7 @@ async function fetchPokemonData(pokemonId) {
 
 function renderPokemonCards(pokemonList) {
     // TODO 3.1: Limpiar el contenedor
-    // PISTA: pokemonContainer.innerHTML = '';
+    pokemonContainer.innerHTML = '';
     
     /* ESCRIBE TU CÓDIGO AQUÍ */
     
@@ -183,7 +200,10 @@ function renderPokemonCards(pokemonList) {
     // Dentro del forEach, usa createPokemonCard() y appendChild()
     
     /* ESCRIBE TU CÓDIGO AQUÍ */
-    
+    pokemonList.forEach(element => {
+        const card = createPokemonCard(element);
+        pokemonContainer.appendChild(card);
+    })
     
 }
 
@@ -204,7 +224,12 @@ function createPokemonCard(pokemon) {
     // Convertir altura de decímetros a metros y peso de hectogramos a kg
     const heightInMeters = (pokemon.height / 10).toFixed(1);
     const weightInKg = (pokemon.weight / 10).toFixed(1);
-    
+    const attack = pokemon.attack;
+    const defense = pokemon.defense;
+    const specialAttack = pokemon.specialAttack;
+    const specialDefense = pokemon.specialDefense;
+    const speed = pokemon.speed;
+
     // Crear los badges de tipos
     const typeBadges = pokemon.types.map(type => 
         `<span class="type-badge type-${type}">${type}</span>`
@@ -227,6 +252,26 @@ function createPokemonCard(pokemon) {
             <div class="stat">
                 <div class="stat-label">Peso</div>
                 <div class="stat-value">${weightInKg}kg</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Ataque</div>
+                <div class="stat-value">${attack}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Defensa</div>
+                <div class="stat-value">${defense}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Ataque Especial</div>
+                <div class="stat-value">${specialAttack}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Defensa Especial</div>
+                <div class="stat-value">${specialDefense}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Velocidad</div>
+                <div class="stat-value">${speed}</div>
             </div>
         </div>
         
